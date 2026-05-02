@@ -1,0 +1,48 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #0f0f0f; color: #e0e0e0; min-height: 100vh; }
+header { background: #1a1a1a; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #ff4444; position: sticky; top: 0; z-index: 100; }
+header .logo { font-size: 1.6rem; font-weight: 800; color: #ff4444; text-decoration: none; }
+header .logo span { color: #fff; }
+.search-bar { display: flex; gap: 8px; flex: 1; max-width: 500px; margin: 0 24px; }
+.search-bar input { flex: 1; padding: 8px 14px; border-radius: 20px; border: 1px solid #333; background: #2a2a2a; color: #fff; font-size: 0.95rem; outline: none; }
+.search-bar input:focus { border-color: #ff4444; }
+.btn { padding: 8px 18px; border-radius: 20px; border: none; cursor: pointer; font-size: 0.9rem; font-weight: 600; transition: opacity 0.2s; text-decoration: none; display: inline-block; }
+.btn:hover { opacity: 0.85; }
+.btn-red { background: #ff4444; color: #fff; }
+.btn-outline { background: transparent; border: 1px solid #ff4444; color: #ff4444; }
+.container { max-width: 1280px; margin: 0 auto; padding: 24px 16px; }
+h2 { font-size: 1.3rem; margin-bottom: 20px; color: #fff; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+.card { background: #1a1a1a; border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; color: inherit; display: block; }
+.card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(255,68,68,0.2); }
+.card-thumb { width: 100%; aspect-ratio: 16/9; background: #2a2a2a; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+.card-info { padding: 12px; }
+.card-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; color: #fff; }
+.card-meta { font-size: 0.82rem; color: #888; }
+.pagination { display: flex; justify-content: center; gap: 8px; margin-top: 32px; }
+.pagination button { padding: 8px 16px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: #fff; cursor: pointer; }
+.pagination button.active { background: #ff4444; border-color: #ff4444; }
+.pagination button:hover:not(.active) { background: #2a2a2a; }
+.upload-box { background: #1a1a1a; border-radius: 16px; padding: 40px; max-width: 600px; margin: 40px auto; }
+.upload-box h2 { margin-bottom: 28px; text-align: center; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #ccc; }
+.form-group input, .form-group textarea { width: 100%; padding: 12px 16px; background: #2a2a2a; border: 1px solid #333; border-radius: 10px; color: #fff; font-size: 1rem; outline: none; font-family: inherit; }
+.form-group input:focus, .form-group textarea:focus { border-color: #ff4444; }
+.form-group textarea { resize: vertical; min-height: 100px; }
+.drop-area { border: 2px dashed #444; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; }
+.drop-area:hover, .drop-area.dragover { border-color: #ff4444; background: rgba(255,68,68,0.05); }
+.drop-area .icon { font-size: 3rem; margin-bottom: 12px; }
+.drop-area p { color: #888; margin-top: 8px; font-size: 0.9rem; }
+.drop-area input[type="file"] { display: none; }
+.progress-bar-wrap { background: #2a2a2a; border-radius: 10px; overflow: hidden; height: 10px; margin-top: 16px; display: none; }
+.progress-bar { height: 100%; background: #ff4444; width: 0%; transition: width 0.3s; }
+#upload-status { margin-top: 12px; font-size: 0.9rem; color: #aaa; text-align: center; }
+.watch-container { max-width: 960px; margin: 32px auto; padding: 0 16px; }
+video { width: 100%; border-radius: 12px; background: #000; max-height: 540px; }
+.video-title { font-size: 1.5rem; font-weight: 700; margin: 16px 0 8px; color: #fff; }
+.video-meta { color: #888; font-size: 0.9rem; margin-bottom: 16px; }
+.video-desc { color: #bbb; line-height: 1.6; background: #1a1a1a; padding: 16px; border-radius: 10px; }
+.empty-state { text-align: center; padding: 80px 20px; color: #555; grid-column: 1/-1; }
+.empty-state .icon { font-size: 4rem; margin-bottom: 16px; }
+@media (max-width: 600px) { .search-bar { max-width: 180px; margin: 0 10px; } .upload-box { padding: 24px 16px; } }
