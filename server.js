@@ -37,21 +37,30 @@ app.get('/api/videos', (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 12;
   const offset = (page - 1) * limit;
-  const videos = db.prepare(
-    'SELECT id, title, description, views, created_at FROM videos WHERE title LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?'
-  ).all('%' + search + '%', limit, offset);
-  const total = db.prepare(
-    'SELECT COUNT(*) as count FROM videos WHERE title LIKE ?'
-  ).get('%' + search + '%').count;
-  res.json({ videos, total, page, pages: Math.ceil(total / limit) });
+  const like = '%' + search + '%';
+
+  db.get('SELECT COUNT(*) as count FROM videos WHERE title LIKE ?', [like], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const total = row.count;
+    db.all(
+      'SELECT id, title, description, views, created_at FROM videos WHERE title LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+      [like, limit, offset],
+      (err2, videos) => {
+        if (err2) return res.status(500).json({ error: err2.message });
+        res.json({ videos: videos || [], total, page, pages: Math.ceil(total / limit) || 1 });
+      }
+    );
+  });
 });
 
 app.get('/api/videos/:id', (req, res) => {
-  const video = db.prepare('SELECT * FROM videos WHERE id = ?').get(req.params.id);
-  if (!video) return res.status(404).json({ error: 'Video nao encontrado' });
-  db.prepare('UPDATE videos SET views = views + 1 WHERE id = ?').run(req.params.id);
-  video.views += 1;
-  res.json(video);
+  db.get('SELECT * FROM videos WHERE id = ?', [req.params.id], (err, video) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (!video) return res.status(404).json({ error: 'Video nao encontrado' });
+    db.run('UPDATE videos SET views = views + 1 WHERE id = ?', [req.params.id]);
+    video.views += 1;
+    res.json(video);
+  });
 });
 
 app.post('/api/upload', upload.single('video'), (req, res) => {
@@ -62,9 +71,14 @@ app.post('/api/upload', upload.single('video'), (req, res) => {
     return res.status(400).json({ error: 'Titulo e obrigatorio.' });
   }
   const id = uuidv4();
-  db.prepare('INSERT INTO videos (id, title, description, filename) VALUES (?, ?, ?, ?)')
-    .run(id, title.trim(), description || '', req.file.filename);
-  res.json({ success: true, id });
+  db.run(
+    'INSERT INTO videos (id, title, description, filename) VALUES (?, ?, ?, ?)',
+    [id, title.trim(), description || '', req.file.filename],
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ success: true, id });
+    }
+  );
 });
 
 app.get('/stream/:filename', (req, res) => {
