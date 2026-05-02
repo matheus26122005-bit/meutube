@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistindo - MeuTube</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="logo" href="/">Meu<span>Tube</span></a>
+  <div></div>
+  <a href="/" class="btn btn-outline">Voltar</a>
+</header>
+<div class="watch-container">
+  <div id="content"><p style="text-align:center;padding:60px;color:#888">Carregando video...</p></div>
+</div>
+<script>
+  var id = new URLSearchParams(window.location.search).get('id');
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  if (!id) {
+    document.getElementById('content').innerHTML = '<p style="color:#f66;text-align:center">ID invalido.</p>';
+  } else {
+    fetch('/api/videos/' + id)
+      .then(function(r) { return r.json(); })
+      .then(function(v) {
+        if (v.error) {
+          document.getElementById('content').innerHTML = '<p style="color:#f66;text-align:center">' + v.error + '</p>';
+          return;
+        }
+        document.title = v.title + ' - MeuTube';
+        var html = '<video controls autoplay preload="metadata"><source src="/stream/' + v.filename + '" type="video/mp4">Seu navegador nao suporta video.</video>';
+        html += '<div class="video-title">' + escHtml(v.title) + '</div>';
+        html += '<div class="video-meta">' + v.views + ' visualizacoes - ' + new Date(v.created_at).toLocaleDateString('pt-BR') + '</div>';
+        if (v.description) html += '<div class="video-desc">' + escHtml(v.description) + '</div>';
+        document.getElementById('content').innerHTML = html;
+      });
+  }
+</script>
+</body>
+</html>
