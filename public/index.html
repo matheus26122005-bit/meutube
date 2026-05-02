@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeuTube - Plataforma de Videos</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <a class="logo" href="/">Meu<span>Tube</span></a>
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Buscar videos...">
+    <button class="btn btn-red" onclick="buscar()">Buscar</button>
+  </div>
+  <a href="upload.html" class="btn btn-red">+ Enviar Video</a>
+</header>
+<div class="container">
+  <h2>Videos Recentes</h2>
+  <div class="grid" id="grid"></div>
+  <div class="pagination" id="pagination"></div>
+</div>
+<script>
+  let currentPage = 1;
+  let currentSearch = '';
+  async function carregarVideos(page, search) {
+    page = page || 1;
+    search = search || '';
+    currentPage = page;
+    currentSearch = search;
+    const res = await fetch('/api/videos?page=' + page + '&search=' + encodeURIComponent(search));
+    const data = await res.json();
+    const grid = document.getElementById('grid');
+    if (data.videos.length === 0) {
+      grid.innerHTML = '<div class="empty-state"><div class="icon">&#127909;</div><p>Nenhum video encontrado. <a href="upload.html" style="color:#ff4444">Seja o primeiro a enviar!</a></p></div>';
+    } else {
+      grid.innerHTML = data.videos.map(function(v) {
+        return '<a class="card" href="watch.html?id=' + v.id + '"><div class="card-thumb">&#127909;</div><div class="card-info"><div class="card-title">' + escHtml(v.title) + '</div><div class="card-meta">&#128065; ' + v.views + ' visualizacoes &middot; ' + formatDate(v.created_at) + '</div></div></a>';
+      }).join('');
+    }
+    var pag = document.getElementById('pagination');
+    pag.innerHTML = '';
+    for (var i = 1; i <= data.pages; i++) {
+      var btn = document.createElement('button');
+      btn.textContent = i;
+      if (i === page) btn.classList.add('active');
+      (function(p) { btn.onclick = function() { carregarVideos(p, currentSearch); }; })(i);
+      pag.appendChild(btn);
+    }
+  }
+  function buscar() {
+    var q = document.getElementById('search').value;
+    carregarVideos(1, q);
+  }
+  document.getElementById('search').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') buscar();
+  });
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function formatDate(dt) {
+    return new Date(dt).toLocaleDateString('pt-BR');
+  }
+  carregarVideos();
+</script>
+</body>
+</html>
