@@ -19,14 +19,13 @@ Abra o Termux e cole:
 
 ```bash
 pkg update -y && pkg upgrade -y
-pkg install -y nodejs-lts git python make clang binutils cloudflared termux-api
-mkdir -p ~/.gyp && echo "{'variables':{'android_ndk_path':''}}" > ~/.gyp/include.gypi
+pkg install -y nodejs git cloudflared termux-api
 git clone https://github.com/matheus26122005-bit/meutube.git
 cd meutube
 npm install
 ```
 
-O `npm install` pode demorar alguns minutos, porque compila o banco de dados (sqlite3) no proprio celular.
+O site usa o banco de dados embutido no Node, entao nao precisa compilar nada. Precisa do Node 22.13 ou mais novo (`node -v` para conferir).
 
 ## 3. Colocar o site no ar
 
@@ -59,6 +58,7 @@ Em `~/meutube-dados` (banco `videos.db` e pasta `uploads/`).
 
 ## Problemas comuns
 
-- **Erro no `npm install`**: rode `pkg install -y python make clang binutils` de novo e repita `npm install`. Se continuar, mande a mensagem de erro.
+- **Erro `No module named 'distutils'` no `npm install`**: era da versao antiga. Rode `cd ~/meutube && git pull && rm -rf node_modules package-lock.json && npm install`.
+- **Erro `No such built-in module: node:sqlite`**: o Node esta velho. Rode `pkg upgrade -y nodejs`.
 - **Site cai quando a tela apaga**: confira a opcao de bateria do passo 1. O script ja ativa o *wake lock* do Termux.
 - **Ver erros do servidor**: `cat ~/meutube.log`
