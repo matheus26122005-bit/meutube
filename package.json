@@ -1,13 +1,13 @@
 {
   "name": "meutube",
   "version": "1.0.0",
-  "description": "Plataforma de videos open source",
+  "description": "Plataforma gratuita de videos e imagens",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "engines": {
-    "node": "20.x"
+    "node": ">=18"
   },
   "dependencies": {
     "express": "^4.18.2",

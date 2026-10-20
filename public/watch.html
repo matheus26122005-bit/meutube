@@ -13,7 +13,7 @@
   <a href="/" class="btn btn-outline">Voltar</a>
 </header>
 <div class="watch-container">
-  <div id="content"><p style="text-align:center;padding:60px;color:#888">Carregando video...</p></div>
+  <div id="content"><p style="text-align:center;padding:60px;color:#888">Carregando...</p></div>
 </div>
 <script>
   var id = new URLSearchParams(window.location.search).get('id');
@@ -27,13 +27,16 @@
       .then(function(r) { return r.json(); })
       .then(function(v) {
         if (v.error) {
-          document.getElementById('content').innerHTML = '<p style="color:#f66;text-align:center">' + v.error + '</p>';
+          document.getElementById('content').innerHTML = '<p style="color:#f66;text-align:center">' + escHtml(v.error) + '</p>';
           return;
         }
         document.title = v.title + ' - MeuTube';
-        var html = '<video controls autoplay preload="metadata"><source src="/stream/' + v.filename + '" type="video/mp4">Seu navegador nao suporta video.</video>';
+        var src = '/stream/' + encodeURIComponent(v.filename);
+        var html = v.type === 'image'
+          ? '<a href="' + src + '" target="_blank"><img class="media-image" src="' + src + '" alt="' + escHtml(v.title) + '"></a>'
+          : '<video controls autoplay playsinline preload="metadata" src="' + src + '">Seu navegador nao suporta este video.</video>';
         html += '<div class="video-title">' + escHtml(v.title) + '</div>';
-        html += '<div class="video-meta">' + v.views + ' visualizacoes - ' + new Date(v.created_at).toLocaleDateString('pt-BR') + '</div>';
+        html += '<div class="video-meta">' + v.views + ' visualizacoes - ' + new Date(v.created_at).toLocaleDateString('pt-BR') + ' &middot; <a href="' + src + '" download>Baixar</a> &middot; <a href="#" onclick="navigator.clipboard.writeText(location.href);this.textContent=\'Link copiado!\';return false">Copiar link</a></div>';
         if (v.description) html += '<div class="video-desc">' + escHtml(v.description) + '</div>';
         document.getElementById('content').innerHTML = html;
       });
