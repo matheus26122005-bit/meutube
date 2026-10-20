@@ -32,4 +32,5 @@ docker run -p 3000:3000 -v meutube-data:/data meutube
 
 ## Hospedar de graca
 
-Passo a passo para a Oracle Cloud Always Free: [DEPLOY-ORACLE.md](DEPLOY-ORACLE.md).
+- No celular Android (Termux + Cloudflare Tunnel): [DEPLOY-ANDROID.md](DEPLOY-ANDROID.md)
+- Na Oracle Cloud Always Free: [DEPLOY-ORACLE.md](DEPLOY-ORACLE.md)
