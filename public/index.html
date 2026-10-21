@@ -3,39 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MeuTube - Plataforma de Videos</title>
+  <title>MeuTube - Videos e Imagens</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
   <a class="logo" href="/">Meu<span>Tube</span></a>
   <div class="search-bar">
-    <input type="text" id="search" placeholder="Buscar videos...">
+    <input type="text" id="search" placeholder="Buscar videos e imagens...">
     <button class="btn btn-red" onclick="buscar()">Buscar</button>
   </div>
-  <a href="upload.html" class="btn btn-red">+ Enviar Video</a>
+  <a href="upload.html" class="btn btn-red">+ Enviar</a>
 </header>
 <div class="container">
-  <h2>Videos Recentes</h2>
+  <div class="tabs" id="tabs">
+    <button class="active" data-type="">Todos</button>
+    <button data-type="video">&#127909; Videos</button>
+    <button data-type="image">&#128444; Imagens</button>
+  </div>
   <div class="grid" id="grid"></div>
   <div class="pagination" id="pagination"></div>
 </div>
 <script>
   let currentPage = 1;
   let currentSearch = '';
+  let currentType = '';
   async function carregarVideos(page, search) {
     page = page || 1;
     search = search || '';
     currentPage = page;
     currentSearch = search;
-    const res = await fetch('/api/videos?page=' + page + '&search=' + encodeURIComponent(search));
+    const res = await fetch('/api/videos?page=' + page + '&search=' + encodeURIComponent(search) + '&type=' + currentType);
     const data = await res.json();
     const grid = document.getElementById('grid');
     if (data.videos.length === 0) {
-      grid.innerHTML = '<div class="empty-state"><div class="icon">&#127909;</div><p>Nenhum video encontrado. <a href="upload.html" style="color:#ff4444">Seja o primeiro a enviar!</a></p></div>';
+      grid.innerHTML = '<div class="empty-state"><div class="icon">&#127909;</div><p>Nada encontrado. <a href="upload.html" style="color:#ff4444">Seja o primeiro a enviar!</a></p></div>';
     } else {
       grid.innerHTML = data.videos.map(function(v) {
-        return '<a class="card" href="watch.html?id=' + v.id + '"><div class="card-thumb">&#127909;</div><div class="card-info"><div class="card-title">' + escHtml(v.title) + '</div><div class="card-meta">&#128065; ' + v.views + ' visualizacoes &middot; ' + formatDate(v.created_at) + '</div></div></a>';
+        var src = '/stream/' + encodeURIComponent(v.filename);
+        var thumb = v.type === 'image'
+          ? '<img src="' + src + '" alt="" loading="lazy">'
+          : '<video src="' + src + '#t=1" preload="metadata" muted playsinline></video><span class="badge">&#9654; Video</span>';
+        return '<a class="card" href="watch.html?id=' + v.id + '"><div class="card-thumb">' + thumb + '</div><div class="card-info"><div class="card-title">' + escHtml(v.title) + '</div><div class="card-meta">&#128065; ' + v.views + ' visualizacoes &middot; ' + formatDate(v.created_at) + '</div></div></a>';
       }).join('');
     }
     var pag = document.getElementById('pagination');
@@ -61,6 +70,14 @@
   function formatDate(dt) {
     return new Date(dt).toLocaleDateString('pt-BR');
   }
+  document.querySelectorAll('#tabs button').forEach(function(b) {
+    b.addEventListener('click', function() {
+      document.querySelectorAll('#tabs button').forEach(function(x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      currentType = b.dataset.type;
+      carregarVideos(1, currentSearch);
+    });
+  });
   carregarVideos();
 </script>
 </body>
